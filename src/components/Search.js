@@ -12,7 +12,7 @@ import {
 const Search = (props) => {
   // Make sure to destructure setIsLoading and setSearchResults from the props
   // const [searchResults, setSearchResults] = useState;
-  // const [isLoading, setIsLoading] = useState;
+  const [isLoading, setIsLoading] = useState([]);
   const [centuryList, setCenturyList] = useState([]);
   const [classificationList, setClassificationList] = useState([]);
   const [queryString, setQueryString] = useState("");
@@ -30,11 +30,12 @@ const Search = (props) => {
    *
    * Make sure to console.error on caught errors from the API methods.
    */
-  useEffect(() => {
+  useEffect((setCenturyList, setClassificationList) => {
     try {
       Promise.all([fetchAllCenturies, fetchAllClassifications]);
-      console.log("We caught an error!", useEffect);
-    } catch {}
+    } catch {
+      console.error("We caught an error!", useEffect);
+    }
   }, []);
 
   /**
@@ -58,6 +59,14 @@ const Search = (props) => {
       id="search"
       onSubmit={async (event) => {
         // write code here
+        event.preventDefault();
+        setIsLoading();
+        try {
+          fetchQueryResults.results({ century, classification, queryString });
+        } catch (error) {
+        } finally {
+          setIsLoading(false);
+        }
       }}
     >
       <fieldset>
@@ -67,9 +76,9 @@ const Search = (props) => {
           type="text"
           placeholder="enter keywords..."
           // TODO UN-comment and fill in the correct value:
-          // value={/* this should be the query string */}
+          value={queryString}
           // TODO UN-comment and fill in the correct onChange function
-          // onChange={/* this should update the value of the query string */}
+          onChange={setQueryString}
         />
       </fieldset>
       <fieldset>
@@ -83,9 +92,9 @@ const Search = (props) => {
           name="classification"
           id="select-classification"
           // TODO UN-comment the value property, and pass it the correct value
-          // value={/* this should be the classification */}
+          value={classification}
           // TODO UN-comment and fill in the correct onChange function
-          // onChange={/* this should update the value of the classification */}
+          onChange={setClassification}
         >
           <option value="any">Any</option>
           {/* map over the classificationList, return an <option /> */}
@@ -93,15 +102,15 @@ const Search = (props) => {
       </fieldset>
       <fieldset>
         <label htmlFor="select-century">
-          Century <span className="century-count">({centuryList.length})</span>
+          century <span className="century-count">({centuryList.length})</span>
         </label>
         <select
           name="century"
           id="select-century"
           // TODO UN-comment the value property, and pass it the correct value
-          // value={/* this should be the century */}
+          value={century}
           // TODO UN-comment and fill in the correct onChange function
-          // onChange={/* this should update the value of the century */}
+          onChange={setCentury}
         >
           <option value="any">Any</option>
           {/* map over the centuryList, return an <option /> */}
